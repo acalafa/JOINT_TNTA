@@ -10,24 +10,33 @@ for TexNeut and `../info/taconfig.cfg` for TexAT. To select other files:
 
 The run prompt still accepts a TexNeut or TexAT run ID.
 
+## Inputs
+
+The two configs, and the run pairing lists `6hepn.txt` and `9lipn.txt`, are the only files in
+`info/`. Each detector's maps, cuts and tables stay in that detector's own codebase, and
+each config's `ExpInfoDir` points there:
+
+| Config | `ExpInfoDir` | Resolved from | Provides |
+| --- | --- | --- | --- |
+| `tnconfig.cfg` | `../../NULIB/info/` | the working directory (`build/`) | TexNeut channel, crystal-position (TexAT origin) and PMT offset maps; finger and PSD cuts |
+| `taconfig.cfg` | `../../TAcc/info/` | the config file's folder | TexAT pad map (`ChannelMap`); the `<beam>_isobutane_vecref.txt` beam tables |
+
+The pairing lists are read from the folder that holds the TexAT config, i.e. `info/` by
+default. This keeps the joint analysis's run selection separate from TAcc's lists.
+
 TexAT's config uses the same parser and setup utilities as TAcc; see
-[TAcc's configuration documentation](../TAcc/README.md#configuration) for
-all keys, defaults, and units. It controls TexAT ROOT input (`RawDataDir`),
-the pad map (`ChannelMap`), the run-pairing table directory (`ExpInfoDir`),
-and the five TPC parameters formerly stored in `TPCinfo.cfg`. Paths are
-resolved relative to the TexAT config file as documented there. The local
-`TPCinfo.cfg` has been replaced by those named values in `taconfig.cfg`.
+[TAcc's configuration documentation](../TAcc/README.md#configuration) for all keys,
+defaults, and units. It also sets the TexAT ROOT input (`RawDataDir`), the output folder
+(`DataBoxDir`), the five TPC parameters, and the joint-only pre-gas keys
+(`PreGasDistance_mm`, `PreGasEnergy_<beam>_MeV`). TexNeut's config also sets
+`neutron_filter` for selecting reconstructed hits.
 
-TexNeut continues to use its own `tnconfig.cfg`, including its detector maps
-and `neutron_filter` for selecting reconstructed hits. TAcc's `newtracks`
-reads TexNeut's `_neutrons` timestamp logs from its `ExpInfoDir`.
-Jointanalysis uses timestamp-matched raw events directly, so it does not
-read those timestamp logs. The SRIM beam-table settings are kept in TAcc's
-`srimconfig.cfg`, which jointanalysis does not read.
+TAcc's `newtracks` reads TexNeut's `_neutrons` timestamp logs, but jointanalysis
+timestamp-matches raw events directly and doesn't read those logs. The SRIM settings that
+generate the beam tables are in TAcc's `srimconfig.cfg`, which jointanalysis doesn't read.
+Regenerate a table in TAcc and jointanalysis picks it up without copying anything.
 
-Both builds link TAcc's shared configuration implementation. Joint loading
-uses the TexAT config for its ROOT input and pad map rather than borrowing
-TexNeut's data or information directory. The current joint analysis still
+Both builds link TAcc's shared configuration implementation. The joint analysis still
 reconstructs vertices directly from the raw TexAT tree.
 
 ## Neutron kinematics
@@ -47,7 +56,7 @@ E_n = m_n c^2 (gamma - 1),  beta = r / (c nTOF)
   the entrance window. `TA::pregas_time_ns` computes it from `PreGasDistance_mm`
   and `PreGasEnergy_<beam>_MeV` in `info/taconfig.cfg`.
 - `t_gas(vertex)` is the elapsed time in the beam's `<beam>_isobutane_vecref.txt`
-  at the vertex's distance from the window. It is read with TAcc's
+  at the vertex's distance from the window. It is read from TAcc's `info/` with the
   `SRIM::BeamTable` file constructor. The beam (6He or 9Li) comes from the run's
   pairing list.
 - The physics is in NULIB's `analysis/kinematics.hpp`. That code needs only a
