@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include "beamtiming.hpp"
 #include "../../NULIB/include/analysis/Event.hpp"
 #include "../../NULIB/include/analysis/Hit.hpp"
 #include "../../NULIB/include/detector/TexNeut.hpp"
@@ -47,6 +48,9 @@ namespace bridges{
   //info_directory), asking which detector is meant when the ID is in both columns
   progutils::RunPair link_run(int requested_run, const std::string& info_directory);
 
+  //the pair's beam from the same run lists: 0 = 6He, 1 = 9Li, as TAcc numbers its tables
+  int beam_dataset(const progutils::RunPair& pair, const std::string& info_directory);
+
   //checks both files exist before reading either, then processes the evt file and opens
   //the TexAT tree; throws if either is missing or empty
   void load_linked_run(
@@ -80,4 +84,8 @@ namespace bridges{
   //run after analysis::analyse_event: replaces the nominal-target flight paths with the
   //event's TexAT reaction vertex, which must already be in NULIB's map frame
   void apply_vertex(TN_obj::Event& event, const std::array<double, 3>& vertex);
+
+  //run after find_vertices: gives every hit its nTOF and neutron energy, all hits of a
+  //pair sharing the beam's flight time to that pair's vertex
+  void calculate_kinematics(LinkedRun& run, const beamtiming::BeamTiming& beam);
 }

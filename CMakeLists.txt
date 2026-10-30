@@ -14,7 +14,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NULIB ${CMAKE_BINARY_DIR}/NULIB 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../TAcc ${CMAKE_BINARY_DIR}/TAcc EXCLUDE_FROM_ALL)
 
 add_library(joint
+    src/beamtiming.cpp
     src/bridges.cpp
+    src/output.cpp
+    src/reactions.cpp
 )
 
 target_include_directories(joint PUBLIC

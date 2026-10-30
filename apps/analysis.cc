@@ -3,7 +3,9 @@
 #include <stdexcept>
 #include <string>
 
+#include "../include/beamtiming.hpp"
 #include "../include/bridges.hpp"
+#include "../include/output.hpp"
 #include "../../NULIB/include/analysis/analysis.hpp"
 #include "../../NULIB/include/detector/TexNeut.hpp"
 #include "../../NULIB/include/progutils/config.hpp"
@@ -62,6 +64,19 @@ int main(int argc, char** argv){
     std::cout<<"Culled "<<vertexing.bad_clouds<<" pairs without a TexAT goodcloud and "
              <<vertexing.no_vertex<<" without a vertex estimate."<<std::endl;
     std::cout<<run.texneut_events.size()<<" paired events kept, each with a vertex."<<std::endl;
+
+    //nTOF = TDC_corr - (MARS scintillator to window + window to vertex) for the run's beam
+    const int dataset = bridges::beam_dataset(pair, ta_config.ExpInfoDir);
+    const beamtiming::BeamTiming beam(ta_config, dataset);
+    std::cout<<(dataset == 0 ? "6He" : "9Li")<<" beam: "<<beam.pregas_ns
+             <<" ns from the MARS scintillator to the window."<<std::endl;
+    bridges::calculate_kinematics(run, beam);
+
+    const std::string outname = output::joint_filename(ta_config, pair);
+    const output::OutputCounts written = output::write_joint_file(run, beam, filter, outname);
+    std::cout<<"Wrote "<<written.hits<<" in-crystal hits ("<<written.neutron_energies
+             <<" passing '"<<config.neutron_filter<<"' with a neutron energy) to "
+             <<outname<<"."<<std::endl;
 
   }catch(const std::exception& e){
     std::cerr<<"Error: "<<e.what()<<std::endl;

@@ -1,5 +1,6 @@
 #include "../include/bridges.hpp"
 #include "../../NULIB/include/analysis/analysis.hpp"
+#include "../../NULIB/include/analysis/kinematics.hpp"
 #include "../../NULIB/include/conversion/evt/interfacing.hpp"
 #include "../../NULIB/include/progutils/dataref.hpp"
 
@@ -64,6 +65,19 @@ progutils::RunPair bridges::link_run(int requested_run, const std::string& info_
   pair.texneut_run = resolved.TexNeut_Run;
   pair.texat_run = resolved.TexAT_Run;
   return pair;
+}
+
+int bridges::beam_dataset(const progutils::RunPair& pair, const std::string& info_directory){
+  RunPairing::RunLists run_lists;
+  if(!RunPairing::load_run_lists(run_lists, info_directory)){
+    throw std::runtime_error("Could not load 6hepn.txt and 9lipn.txt run lists from " +
+                             info_directory);
+  }
+  const RunPairing::RunSet set = run_lists.membership(pair.texat_run, RunPairing::RunSource::TexAT);
+  if(set == RunPairing::RunSet::SixHe) return 0;
+  if(set == RunPairing::RunSet::NineLi) return 1;
+  throw std::runtime_error("TexAT run " + std::to_string(pair.texat_run) +
+                           " is in neither the 6He nor the 9Li run list");
 }
 
 void bridges::load_linked_run(
@@ -251,6 +265,18 @@ void bridges::apply_vertex(TN_obj::Event& event, const std::array<double, 3>& ve
   //vertex and TexNeut map must share the TexAT entrance window origin, axes and units
   for(TN_obj::Hit& hit : event.hits){
     if(hit.incrystal) analysis::calculate_hit_flightpath(hit, vertex);
+  }
+  return;
+}
+
+void bridges::calculate_kinematics(LinkedRun& run, const beamtiming::BeamTiming& beam){
+  if(run.vertices.size() != run.texneut_events.size()){
+    throw std::logic_error("calculate_kinematics needs a vertex for every pair: run find_vertices first");
+  }
+  for(std::size_t i = 0; i < run.texneut_events.size(); ++i){
+    //vertex y is the beam axis, measured from the entrance window like the beam table
+    kinematics::calculate_event_kinematics(run.texneut_events[i],
+                                           beam.reaction_time_ns(run.vertices[i][1]));
   }
   return;
 }
