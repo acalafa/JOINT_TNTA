@@ -16,6 +16,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../TAcc ${CMAKE_BINARY_DIR}/TAcc EX
 add_library(joint
     src/beamtiming.cpp
     src/bridges.cpp
+    src/jointconfig.cpp
     src/output.cpp
     src/reactions.cpp
 )

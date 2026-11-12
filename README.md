@@ -1,43 +1,47 @@
 # JOINT_TNTA
 
 Build with `cmake -S . -B build` and `cmake --build build`. Run
-`jointanalysis` from `build/`. By default it loads `../info/tnconfig.cfg`
-for TexNeut and `../info/taconfig.cfg` for TexAT. To select other files:
+`jointanalysis` from `build/`. By default it loads `../info/jointconfig.cfg`; to select
+another joint config:
 
 ```sh
-./jointanalysis /path/to/tnconfig.cfg /path/to/taconfig.cfg
+./jointanalysis /path/to/jointconfig.cfg
 ```
 
-The run prompt still accepts a TexNeut or TexAT run ID.
+The run prompt accepts a TexNeut or TexAT run ID.
 
 ## Inputs
 
-The two configs, and the run pairing lists `6hepn.txt` and `9lipn.txt`, are the only files in
-`info/`. Each detector's maps, cuts and tables stay in that detector's own codebase, and
-each config's `ExpInfoDir` points there:
+`info/jointconfig.cfg` is the only config jointanalysis reads directly. It points to each
+detector's own config, which is loaded unchanged, and holds the settings that belong to
+the joint analysis alone. Relative paths are resolved from the joint config's folder.
 
-| Config | `ExpInfoDir` | Resolved from | Provides |
-| --- | --- | --- | --- |
-| `tnconfig.cfg` | `../../NULIB/info/` | the working directory (`build/`) | TexNeut channel, crystal-position (TexAT origin) and PMT offset maps; finger and PSD cuts |
-| `taconfig.cfg` | `../../TAcc/info/` | the config file's folder | TexAT pad map (`ChannelMap`); the `<beam>_isobutane_vecref.txt` beam tables |
+| Key | Meaning |
+| --- | --- |
+| `NULIBConfig` | Required: NULIB's `tnconfig.cfg` (`../../NULIB/info/tnconfig.cfg`): TexNeut raw data, channel, crystal-position (TexAT origin) and PMT offset maps; finger and PSD cuts |
+| `TAccConfig` | Required: TAcc's `taconfig.cfg` (`../../TAcc/info/taconfig.cfg`): TexAT raw data, pad map, TPC parameters and cloud cuts; the `<beam>_isobutane_vecref.txt` beam tables in its `ExpInfoDir` |
+| `DataBoxDir` | Joint output folder (default `../databox/`) |
+| `neutron_filter` | Pairs are kept only if their TexNeut event has an in-crystal hit of this kind: `all`, `neutrons` (default) or `nonneutrons`. NULIB's own `neutron_filter` is not used |
+| `PreGasDistance_mm` | Required: beam flight from the MARS scintillator (TDC start) to the entrance window |
+| `PreGasEnergy_6he_MeV`, `PreGasEnergy_9li_MeV` | Required: total beam energy after the scintillator, for that flight |
 
-The pairing lists are read from the folder that holds the TexAT config, i.e. `info/` by
-default. This keeps the joint analysis's run selection separate from TAcc's lists.
+Both detector configs resolve their own relative paths from their own folders, so each
+codebase's maps, cuts and tables are read in place and any change there (for example
+TAcc's `min_side_hits` or beam-time cut) applies to the joint analysis too.
 
-TexAT's config uses the same parser and setup utilities as TAcc; see
-[TAcc's configuration documentation](../TAcc/README.md#configuration) for all keys,
-defaults, and units. It also sets the TexAT ROOT input (`RawDataDir`), the output folder
-(`DataBoxDir`), the five TPC parameters, and the joint-only pre-gas keys
-(`PreGasDistance_mm`, `PreGasEnergy_<beam>_MeV`). TexNeut's config also sets
-`neutron_filter` for selecting reconstructed hits.
+The run pairing lists `6hepn.txt` and `9lipn.txt` are read from the joint config's folder
+(`info/`), separately from NULIB's and TAcc's own lists.
+
+See [NULIB's README](../NULIB/README.MD) and
+[TAcc's configuration documentation](../TAcc/README.md#configuration) for the keys of
+each detector config.
 
 TAcc's `newtracks` reads TexNeut's `_neutrons` timestamp logs, but jointanalysis
 timestamp-matches raw events directly and doesn't read those logs. The SRIM settings that
 generate the beam tables are in TAcc's `srimconfig.cfg`, which jointanalysis doesn't read.
 Regenerate a table in TAcc and jointanalysis picks it up without copying anything.
 
-Both builds link TAcc's shared configuration implementation. The joint analysis still
-reconstructs vertices directly from the raw TexAT tree.
+The joint analysis reconstructs vertices directly from the raw TexAT tree.
 
 ## Neutron kinematics
 
@@ -53,8 +57,9 @@ E_n = m_n c^2 (gamma - 1),  beta = r / (c nTOF)
 ```
 
 - `t_pregas` is the beam's flight from the MARS scintillator (the TDC start) to
-  the entrance window. `TA::pregas_time_ns` computes it from `PreGasDistance_mm`
-  and `PreGasEnergy_<beam>_MeV` in `info/taconfig.cfg`.
+  the entrance window. `beamtiming.cpp` computes it from `PreGasDistance_mm`
+  and `PreGasEnergy_<beam>_MeV` in `info/jointconfig.cfg`, with the same bare-nucleus
+  masses as TAcc's beam tables.
 - `t_gas(vertex)` is the elapsed time in the beam's `<beam>_isobutane_vecref.txt`
   at the vertex's distance from the window. It is read from TAcc's `info/` with the
   `SRIM::BeamTable` file constructor. The beam (6He or 9Li) comes from the run's
@@ -90,7 +95,7 @@ The beam energies behind both tables and the pre-gas energies are derived in
 
 ## Output
 
-Each run writes `databox/joint_<TexNeut run>_<TexAT run>.root` (TexAT
+Each run writes `databox/joint_<TexNeut run>_<TexAT run>.root` (the joint
 config's `DataBoxDir`), replacing an existing file:
 
 | Object | Contents |
@@ -110,7 +115,7 @@ config's `DataBoxDir`), replacing an existing file:
 
 `gamma_check` only sees the non-neutron hits in events that passed the neutron
 cull. For more statistics, run with `neutron_filter = all` in a copy of
-`tnconfig.cfg`.
+`jointconfig.cfg`.
 
 ## Open issues
 

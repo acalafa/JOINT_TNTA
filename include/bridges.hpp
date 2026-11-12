@@ -71,7 +71,7 @@ namespace bridges{
   CullCounts cull_unpaired(LinkedRun& run);
 
   //run after analysis::analyse_events: drops pairs whose TexNeut event has no in-crystal
-  //hit passing the filter (config's neutron_filter), since only in-crystal hits get a
+  //hit passing the filter (the joint config's neutron_filter), since only in-crystal hits get a
   //flight path; hits within kept events are left untouched
   std::size_t cull_by_hit_filter(LinkedRun& run, TN_obj::HitFilter filter);
 

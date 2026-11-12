@@ -5,6 +5,7 @@
 
 #include "beamtiming.hpp"
 #include "bridges.hpp"
+#include "jointconfig.hpp"
 
 namespace output{
   //what write_joint_file wrote
@@ -13,8 +14,8 @@ namespace output{
     std::size_t neutron_energies{}; //of those, hits passing the filter with a finite energy
   };
 
-  //DataBoxDir/joint_<TexNeut run>_<TexAT run>.root
-  std::string joint_filename(const TA::Config& ta_config, const progutils::RunPair& pair);
+  //the joint config's DataBoxDir/joint_<TexNeut run>_<TexAT run>.root
+  std::string joint_filename(const jointconfig::JointConfig& config, const progutils::RunPair& pair);
 
   //run after bridges::calculate_kinematics. Writes a "hits" tree of every in-crystal hit
   //(passes records the filter) and histograms: neutron energy vs lab angle and nTOF for

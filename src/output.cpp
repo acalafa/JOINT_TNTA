@@ -11,8 +11,8 @@
 #include "TH2D.h"
 #include "TMath.h"
 
-std::string output::joint_filename(const TA::Config& ta_config, const progutils::RunPair& pair){
-  return ta_config.DataBoxDir + "joint_" + std::to_string(pair.texneut_run) + "_" +
+std::string output::joint_filename(const jointconfig::JointConfig& config, const progutils::RunPair& pair){
+  return config.DataBoxDir + "joint_" + std::to_string(pair.texneut_run) + "_" +
          std::to_string(pair.texat_run) + ".root";
 }
 
@@ -82,7 +82,7 @@ output::OutputCounts output::write_joint_file(
     hits->Branch("bar", &bar, "bar/I");
     hits->Branch("crystal", &crystal, "crystal/I");
     hits->Branch("isneutron", &isneutron, "isneutron/O");
-    hits->Branch("passes", &passes, "passes/O"); //passes the config's neutron_filter
+    hits->Branch("passes", &passes, "passes/O"); //passes the joint config's neutron_filter
     hits->Branch("vertex_mm", &vertex_mm, "vertex_mm/D");
     hits->Branch("t_reaction", &t_reaction, "t_reaction/D");
     hits->Branch("tdc_top", &tdc_top, "tdc_top/D");
