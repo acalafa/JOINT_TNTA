@@ -12,7 +12,7 @@ namespace beamtiming{
     BeamTiming(const jointconfig::JointConfig& config, const TA::Config& ta_config, int dataset);
 
     //reaction time [ns] on the TDC_corr axis for a vertex vertex_mm downstream of the
-    //entrance window (NULIB's map y); throws outside the beam table
+    //entrance window (the shared frame's y); throws outside the beam table
     double reaction_time_ns(double vertex_mm) const;
     //beam kinetic energy [MeV] at the vertex; throws outside the beam table
     double beam_energy_MeV(double vertex_mm) const;

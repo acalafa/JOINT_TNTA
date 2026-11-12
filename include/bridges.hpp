@@ -26,8 +26,8 @@ namespace bridges{
     TTree* texat_tree = nullptr; //owned by texat_file; entries are read from disk on demand
     //filled by cull_unpaired: texat_entries[i] is the tree entry of texneut_events[i]
     std::vector<Long64_t> texat_entries{};
-    //filled by find_vertices: vertices[i] is texneut_events[i]'s reaction vertex in NULIB's
-    //map frame (mm from the TexAT entrance window; x horizontal, y beam axis, z vertical)
+    //filled by find_vertices: vertices[i] is texneut_events[i]'s reaction vertex in the shared
+    //frame (mm from the TexAT entrance window on the beam axis; x horizontal, y beam, z vertical)
     std::vector<std::array<double, 3>> vertices{};
   };
 
@@ -82,7 +82,7 @@ namespace bridges{
   VertexCounts find_vertices(LinkedRun& run, const ChannelMap& cmap, const TPCinfo& tpc);
 
   //run after analysis::analyse_event: replaces the nominal-target flight paths with the
-  //event's TexAT reaction vertex, which must already be in NULIB's map frame
+  //event's TexAT reaction vertex, in the shared frame of NULIB's map and TAcc's vertices
   void apply_vertex(TN_obj::Event& event, const std::array<double, 3>& vertex);
 
   //run after find_vertices: gives every hit its nTOF and neutron energy, all hits of a

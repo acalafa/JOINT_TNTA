@@ -234,11 +234,8 @@ bridges::VertexCounts bridges::find_vertices(
         ++counts.no_vertex;
         return false;
       }
-      //pencil beam: TexAT's beam axis (its z) is NULIB's y; x and the vertical stay on the
-      //nominal beam axis, as for NULIB's nominal target
-      const std::array<double, 3> vertex{{
-        0.0, window_z_mm(vertex_row), TexATGeometry::nominal_vertex_y_mm
-      }};
+      //pencil beam: TAcc gives the vertex in the shared frame NULIB's map also uses
+      const std::array<double, 3> vertex = nominal_vertex(vertex_row);
       apply_vertex(event, vertex);
       vertices.push_back(vertex);
       return true;
