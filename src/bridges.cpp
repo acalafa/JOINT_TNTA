@@ -226,11 +226,12 @@ bridges::VertexCounts bridges::find_vertices(
   try{
     counts.bad_clouds = keep_pairs(run, [&](std::size_t i){
       TN_obj::Event& event = run.texneut_events[i];
-      //t0 shift only moves drift height; cloud membership and the row vertex don't use it
-      TPCinfo event_tpc = tpc;
-      event_tpc.t0_ns -= static_cast<float>(analysis::earliest_tdc_ns(event));
+      //the event's t0 is taconfig's shifted by TexNeut's earliest TDC; it only moves drift
+      //height, and cloud membership and the row vertex don't use it
+      const float event_t0_ns = tpc.t0_ns - static_cast<float>(analysis::earliest_tdc_ns(event));
       tree.GetEntry(run.texat_entries[i]);
-      const TA_obj::PointCloud cloud(branches, cloud_cmap, event_tpc);
+      TPCinfo cloud_tpc = tpc;
+      const TA_obj::PointCloud cloud(branches, cloud_cmap, cloud_tpc, event_t0_ns);
       if(!cloud.goodcloud) return false;
 
       const double vertex_row = Analysis::estimate_vertex_z(cloud);
