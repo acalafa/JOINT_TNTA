@@ -1,6 +1,9 @@
 # JOINT_TNTA
 
-Build with `cmake -S . -B build` and `cmake --build build`. Run
+Build with `cmake -S . -B build` and `cmake --build build`. The build uses
+NULIB's `tncore` and TAcc's `tacore` libraries from their checkouts beside this one
+(`../NULIB`, `../TAcc`); pass `-DNULIB_DIR=...` or `-DTACC_DIR=...` to use others.
+Their headers are included by name through those libraries. Run
 `jointanalysis` from `build/`. By default it loads `../info/jointconfig.cfg`; to select
 another joint config:
 

@@ -1,4 +1,4 @@
-#include "../include/jointconfig.hpp"
+#include "jointconfig.hpp"
 
 #include <cmath>
 #include <fstream>

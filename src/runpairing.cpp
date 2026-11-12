@@ -1,4 +1,4 @@
-#include "../include/runpairing.hpp"
+#include "runpairing.hpp"
 
 #include <algorithm>
 #include <cctype>

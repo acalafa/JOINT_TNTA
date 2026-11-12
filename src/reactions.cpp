@@ -1,4 +1,4 @@
-#include "../include/reactions.hpp"
+#include "reactions.hpp"
 
 #include <stdexcept>
 #include <string>

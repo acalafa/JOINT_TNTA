@@ -1,8 +1,8 @@
 #pragma once
 
 #include "jointconfig.hpp"
-#include "../../TAcc/include/srims.h"
-#include "../../TAcc/include/taconfig.h"
+#include "srims.h"
+#include "taconfig.h"
 
 namespace beamtiming{
   //the beam's flight from the MARS scintillator (the TDC start) to a TexAT reaction vertex

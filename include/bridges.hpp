@@ -10,12 +10,12 @@
 
 #include "beamtiming.hpp"
 #include "runpairing.hpp"
-#include "../../NULIB/include/analysis/Event.hpp"
-#include "../../NULIB/include/analysis/Hit.hpp"
-#include "../../NULIB/include/detector/TexNeut.hpp"
-#include "../../NULIB/include/progutils/config.hpp"
-#include "../../TAcc/include/configs.h"
-#include "../../TAcc/include/taconfig.h"
+#include "analysis/Event.hpp"
+#include "analysis/Hit.hpp"
+#include "detector/TexNeut.hpp"
+#include "progutils/config.hpp"
+#include "configs.h"
+#include "taconfig.h"
 
 namespace bridges{
   //both detectors' data for one paired run

@@ -3,18 +3,18 @@
 #include <stdexcept>
 #include <string>
 
-#include "../include/beamtiming.hpp"
-#include "../include/bridges.hpp"
-#include "../include/jointconfig.hpp"
-#include "../include/output.hpp"
-#include "../../NULIB/include/analysis/analysis.hpp"
-#include "../../NULIB/include/detector/TexNeut.hpp"
-#include "../../NULIB/include/progutils/config.hpp"
-#include "../../NULIB/include/progutils/dataref.hpp"
-#include "../../NULIB/include/progutils/setup.hpp"
-#include "../../NULIB/include/analysis/Hit.hpp"
-#include "../../TAcc/include/configs.h"
-#include "../../TAcc/include/tasetup.h"
+#include "beamtiming.hpp"
+#include "bridges.hpp"
+#include "jointconfig.hpp"
+#include "output.hpp"
+#include "analysis/analysis.hpp"
+#include "detector/TexNeut.hpp"
+#include "progutils/config.hpp"
+#include "progutils/dataref.hpp"
+#include "progutils/setup.hpp"
+#include "analysis/Hit.hpp"
+#include "configs.h"
+#include "tasetup.h"
 
 int main(int argc, char** argv){
   try{

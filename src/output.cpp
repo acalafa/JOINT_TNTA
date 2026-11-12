@@ -1,6 +1,6 @@
-#include "../include/output.hpp"
-#include "../include/reactions.hpp"
-#include "../../NULIB/include/analysis/timing.hpp"
+#include "output.hpp"
+#include "reactions.hpp"
+#include "analysis/timing.hpp"
 
 #include <cmath>
 #include <memory>

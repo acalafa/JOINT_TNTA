@@ -1,8 +1,8 @@
-#include "../include/bridges.hpp"
-#include "../../NULIB/include/analysis/analysis.hpp"
-#include "../../NULIB/include/analysis/kinematics.hpp"
-#include "../../NULIB/include/conversion/evt/interfacing.hpp"
-#include "../../NULIB/include/progutils/dataref.hpp"
+#include "bridges.hpp"
+#include "analysis/analysis.hpp"
+#include "analysis/kinematics.hpp"
+#include "conversion/evt/interfacing.hpp"
+#include "progutils/dataref.hpp"
 
 #include <cmath>
 #include <cstdint>

@@ -1,4 +1,4 @@
-#include "../include/beamtiming.hpp"
+#include "beamtiming.hpp"
 
 #include <stdexcept>
 

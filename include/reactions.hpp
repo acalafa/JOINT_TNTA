@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../NULIB/include/analysis/kinematics.hpp"
+#include "analysis/kinematics.hpp"
 
 namespace reactions{
   //p(6He,n)6Li for dataset 0, p(9Li,n)9Be for dataset 1; throws otherwise
