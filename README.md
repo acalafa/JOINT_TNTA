@@ -80,6 +80,11 @@ Each hit also gets the c.m. energy of its (p,n) reaction, p(6He,n)6Li or p(9Li,n
 `Ex` is the missing mass. It gives the residual's excitation from the vertex's beam energy and
 the neutron, and so shows which residual state the neutrons populate.
 
+`theta_cm` is the neutron's c.m. angle: the lab neutron (`En`, `theta`) is boosted along the
+beam axis using the vertex's `Ebeam`, so no residual state is assumed. It is measured from the
+beam direction, like `theta`. The normal-kinematics A(p,n) angle, measured from the proton's
+direction, is `180 - theta_cm`.
+
 The beam energies behind both tables and the pre-gas energies are derived in
 [TAcc's README](../TAcc/README.md#beam-energies).
 
@@ -90,7 +95,7 @@ config's `DataBoxDir`), replacing an existing file:
 
 | Object | Contents |
 | --- | --- |
-| `En_theta` | Neutron energy vs lab polar angle from the vertex, for hits passing `neutron_filter` (2 deg x 0.1 MeV) |
+| `En_theta` | Neutron energy vs lab polar angle from the vertex, for hits passing `neutron_filter` (0.25 deg x 0.05 MeV) |
 | `nTOF` | nTOF of hits passing `neutron_filter` |
 | `gamma_check` | `nTOF - r/c` of non-neutron hits; prompt gammas should peak at 0 |
 | `vertex` | TexAT vertex along the beam axis, one entry per pair |
@@ -99,7 +104,9 @@ config's `DataBoxDir`), replacing an existing file:
 | `En_Ecm_n`, `En_Ecm_n_ias` | E_n vs E_cm from the neutron, residual ground state or IAS |
 | `Ecm_Ecm_n`, `Ecm_Ecm_n_ias` | E_cm from the vertex vs from the neutron |
 | `Ex` | Residual excitation (missing mass) |
-| `hits` | Tree of every in-crystal hit: runs, `dataset` (0 = 6He, 1 = 9Li), `timestamp`, `bar`, `crystal`, `isneutron`, `passes` (the configured filter), `vertex_mm`, `t_reaction`, `tdc_top`/`tdc_bot` (TDC_corr), `r`, `theta`/`phi` (deg), `tof`, `tof_minus_rc`, `En`, `psd`, `light` (summed PMT light), `Ebeam`, `Ecm`, `Ecm_n`, `Ecm_n_ias`, `Ex` |
+| `theta_cm`, `En_theta_cm` | Neutron c.m. angle (1 deg bins), and E_n against it |
+| `theta_cm_theta` | Neutron c.m. angle vs lab angle |
+| `hits` | Tree of every in-crystal hit: runs, `dataset` (0 = 6He, 1 = 9Li), `timestamp`, `bar`, `crystal`, `isneutron`, `passes` (the configured filter), `vertex_mm`, `t_reaction`, `tdc_top`/`tdc_bot` (TDC_corr), `r`, `theta`/`phi` (deg), `tof`, `tof_minus_rc`, `En`, `psd`, `light` (summed PMT light), `Ebeam`, `Ecm`, `Ecm_n`, `Ecm_n_ias`, `Ex`, `theta_cm` (deg) |
 
 `gamma_check` only sees the non-neutron hits in events that passed the neutron
 cull. For more statistics, run with `neutron_filter = all` in a copy of

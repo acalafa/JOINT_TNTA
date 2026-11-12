@@ -32,6 +32,13 @@ output::OutputCounts output::write_joint_file(
     TDirectory::TContext into_file(file.get());
     TH2D* en_theta = new TH2D("En_theta",
       "Neutron energy vs lab angle;#theta_{lab} [deg];E_{n} [MeV]", 160, 0.0, 40.0, 400, 0.0, 20.0);
+    TH2D* en_theta_cm = new TH2D("En_theta_cm",
+      "Neutron energy vs c.m. angle (vertex beam energy);#theta_{c.m.} [deg];E_{n} [MeV]",
+      180, 0.0, 180.0, 400, 0.0, 20.0);
+    TH2D* theta_cm_lab = new TH2D("theta_cm_theta",
+      "Neutron c.m. vs lab angle;#theta_{lab} [deg];#theta_{c.m.} [deg]", 160, 0.0, 40.0, 180, 0.0, 180.0);
+    TH1D* theta_cm_1d = new TH1D("theta_cm",
+      "Neutron c.m. angle (vertex beam energy);#theta_{c.m.} [deg];Hits", 180, 0.0, 180.0);
     TH1D* tof = new TH1D("nTOF", "Neutron time of flight;nTOF [ns];Hits", 1200, -50.0, 250.0);
     TH1D* gamma_check = new TH1D("gamma_check",
       "Non-neutron hits: TOF - r/c (gammas at 0);TOF - r/c [ns];Hits", 800, -50.0, 150.0);
@@ -64,7 +71,7 @@ output::OutputCounts output::write_joint_file(
     bool isneutron = false, passes = false;
     double vertex_mm = 0, t_reaction = 0, tdc_top = 0, tdc_bot = 0;
     double r = 0, theta = 0, phi = 0, hit_tof = 0, tof_minus_rc = 0, En = 0, psd = 0, light = 0;
-    double Ebeam = 0, Ecm = 0, Ecm_n = 0, Ecm_n_ias = 0, Ex = 0;
+    double Ebeam = 0, Ecm = 0, Ecm_n = 0, Ecm_n_ias = 0, Ex = 0, theta_cm = 0;
     const kinematics::Reaction reaction = reactions::pn_reaction(dataset);
     const double analog_state = reactions::analog_state_MeV(dataset);
     TTree* hits = new TTree("hits", "In-crystal TexNeut hits with TexAT vertices");
@@ -93,6 +100,7 @@ output::OutputCounts output::write_joint_file(
     hits->Branch("Ecm_n", &Ecm_n, "Ecm_n/D"); //from the neutron, residual ground state
     hits->Branch("Ecm_n_ias", &Ecm_n_ias, "Ecm_n_ias/D"); //from the neutron, residual IAS
     hits->Branch("Ex", &Ex, "Ex/D");          //residual excitation from vertex and neutron
+    hits->Branch("theta_cm", &theta_cm, "theta_cm/D"); //deg, neutron from the beam direction in c.m.
 
     const double deg_per_rad = TMath::RadToDeg();
     for(std::size_t i = 0; i < run.texneut_events.size(); ++i){
@@ -125,6 +133,7 @@ output::OutputCounts output::write_joint_file(
         Ecm_n_ias = kinematics::cm_energy_MeV(reaction,
           kinematics::beam_energy_from_neutron_MeV(reaction, En, hit.position.theta, analog_state));
         Ex = kinematics::residual_excitation_MeV(reaction, Ebeam, En, hit.position.theta);
+        theta_cm = kinematics::neutron_cm_angle_rad(reaction, Ebeam, En, hit.position.theta)*deg_per_rad;
         hits->Fill();
         ++counts.hits;
 
@@ -136,6 +145,11 @@ output::OutputCounts output::write_joint_file(
           en_theta->Fill(theta, En);
           ecm->Fill(Ecm);
           ex->Fill(Ex);
+          if(std::isfinite(theta_cm)){
+            en_theta_cm->Fill(theta_cm, En);
+            theta_cm_lab->Fill(theta, theta_cm);
+            theta_cm_1d->Fill(theta_cm);
+          }
           if(std::isfinite(Ecm_n)){
             en_ecm_n->Fill(Ecm_n, En);
             ecm_ecm_n->Fill(Ecm_n, Ecm);
