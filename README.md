@@ -41,8 +41,8 @@ See [NULIB's README](../NULIB/README.MD) and
 [TAcc's configuration documentation](../TAcc/README.md#configuration) for the keys of
 each detector config.
 
-TAcc's `newtracks` reads TexNeut's `_neutrons` timestamp logs, but jointanalysis
-timestamp-matches raw events directly and doesn't read those logs. The SRIM settings that
+jointanalysis timestamp-matches raw TexNeut and TexAT events directly; it reads no
+timestamp/TDC logs. The SRIM settings that
 generate the beam tables are in TAcc's `srimconfig.cfg`, which jointanalysis doesn't read.
 Regenerate a table in TAcc and jointanalysis picks it up without copying anything.
 
