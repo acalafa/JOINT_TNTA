@@ -29,8 +29,13 @@ Both detector configs resolve their own relative paths from their own folders, s
 codebase's maps, cuts and tables are read in place and any change there (for example
 TAcc's `min_side_hits` or beam-time cut) applies to the joint analysis too.
 
-The run pairing lists `6hepn.txt` and `9lipn.txt` are read from the joint config's folder
-(`info/`), separately from NULIB's and TAcc's own lists.
+Run pairing belongs to the joint analysis alone: neither NULIB nor TAcc knows the other
+detector's run IDs. The pair lists `6hepn.txt` and `9lipn.txt` are read from the joint
+config's folder (`info/`). Each row is `TexNeut_run TexAT_run`; blank lines and `#` comments
+are allowed, and IDs must be positive and unique within each detector's column across both
+lists. NULIB keeps its own TexNeut-only set lists. `runpairing.hpp` resolves a run ID from
+either detector, asking `ta`/`tn` when an ID occurs in both columns, and gives the beam
+(6He or 9Li) from the list it is in. Its checks run with `ctest --test-dir build`.
 
 See [NULIB's README](../NULIB/README.MD) and
 [TAcc's configuration documentation](../TAcc/README.md#configuration) for the keys of

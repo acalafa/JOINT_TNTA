@@ -13,6 +13,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NULIB ${CMAKE_BINARY_DIR}/NULIB 
 # TAcc's tacore library, for run pairing and TexAT file names; its apps are left out too
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../TAcc ${CMAKE_BINARY_DIR}/TAcc EXCLUDE_FROM_ALL)
 
+# run pairing has no ROOT or detector dependencies, so its test builds on its own
+add_library(runpairing src/runpairing.cpp)
+
 add_library(joint
     src/beamtiming.cpp
     src/bridges.cpp
@@ -27,6 +30,7 @@ target_include_directories(joint PUBLIC
 
 target_link_libraries(joint PUBLIC
     tncore
+    runpairing
 )
 # private: TAcc's utils.h colour macros clash with NULIB's tformat names
 target_link_libraries(joint PRIVATE
@@ -38,3 +42,12 @@ add_executable(jointanalysis
     apps/analysis.cc
 )
 target_link_libraries(jointanalysis PRIVATE joint)
+
+###########################################
+# ctest --test-dir build   (checks the real pair lists in info/ too)
+enable_testing()
+add_executable(runpairing_test
+    tests/runpairing.cc
+)
+target_link_libraries(runpairing_test PRIVATE runpairing)
+add_test(NAME runpairing COMMAND runpairing_test ${CMAKE_CURRENT_SOURCE_DIR}/info)

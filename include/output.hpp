@@ -15,7 +15,7 @@ namespace output{
   };
 
   //the joint config's DataBoxDir/joint_<TexNeut run>_<TexAT run>.root
-  std::string joint_filename(const jointconfig::JointConfig& config, const progutils::RunPair& pair);
+  std::string joint_filename(const jointconfig::JointConfig& config, const runpairing::RunPair& pair);
 
   //run after bridges::calculate_kinematics. Writes a "hits" tree of every in-crystal hit
   //(passes records the filter) and histograms: neutron energy vs lab angle and nTOF for

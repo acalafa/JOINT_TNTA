@@ -15,11 +15,10 @@
 #include "TBranch.h"
 #include "TDirectory.h"
 
-//TAcc headers last: utils.h #defines RED, GREEN, ... which would break NULIB's tformat.hpp
+//TAcc headers
 #include "analysis.h"
 #include "root_mess.h"
 #include "trackrecon.h"
-#include "utils.h"
 
 namespace{
 
@@ -54,35 +53,31 @@ std::size_t keep_pairs(
 
 }
 
-progutils::RunPair bridges::link_run(int requested_run, const std::string& info_directory){
-  RunPairing::RunLists run_lists;
-  if(!RunPairing::load_run_lists(run_lists, info_directory)){
+runpairing::RunPair bridges::link_run(int requested_run, const std::string& info_directory){
+  runpairing::RunLists run_lists;
+  if(!runpairing::load_run_lists(run_lists, info_directory)){
     throw std::runtime_error("Could not load 6hepn.txt and 9lipn.txt run lists from " +
                              info_directory);
   }
-  const RunPairing::RunPair resolved = run_lists.resolve(requested_run);
-  progutils::RunPair pair{};
-  pair.texneut_run = resolved.TexNeut_Run;
-  pair.texat_run = resolved.TexAT_Run;
-  return pair;
+  return run_lists.resolve(requested_run);
 }
 
-int bridges::beam_dataset(const progutils::RunPair& pair, const std::string& info_directory){
-  RunPairing::RunLists run_lists;
-  if(!RunPairing::load_run_lists(run_lists, info_directory)){
+int bridges::beam_dataset(const runpairing::RunPair& pair, const std::string& info_directory){
+  runpairing::RunLists run_lists;
+  if(!runpairing::load_run_lists(run_lists, info_directory)){
     throw std::runtime_error("Could not load 6hepn.txt and 9lipn.txt run lists from " +
                              info_directory);
   }
-  const RunPairing::RunSet set = run_lists.membership(pair.texat_run, RunPairing::RunSource::TexAT);
-  if(set == RunPairing::RunSet::SixHe) return 0;
-  if(set == RunPairing::RunSet::NineLi) return 1;
+  const runpairing::RunSet set = run_lists.membership(pair.texat_run, runpairing::RunSource::TexAT);
+  if(set == runpairing::RunSet::SixHe) return 0;
+  if(set == runpairing::RunSet::NineLi) return 1;
   throw std::runtime_error("TexAT run " + std::to_string(pair.texat_run) +
                            " is in neither the 6He nor the 9Li run list");
 }
 
 void bridges::load_linked_run(
   LinkedRun& output,
-  const progutils::RunPair& pair,
+  const runpairing::RunPair& pair,
   const config_obj& config,
   const TexNeut& tn,
   const TA::Config& ta_config

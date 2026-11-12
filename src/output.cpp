@@ -11,7 +11,7 @@
 #include "TH2D.h"
 #include "TMath.h"
 
-std::string output::joint_filename(const jointconfig::JointConfig& config, const progutils::RunPair& pair){
+std::string output::joint_filename(const jointconfig::JointConfig& config, const runpairing::RunPair& pair){
   return config.DataBoxDir + "joint_" + std::to_string(pair.texneut_run) + "_" +
          std::to_string(pair.texat_run) + ".root";
 }

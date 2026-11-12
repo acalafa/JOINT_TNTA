@@ -9,18 +9,18 @@
 #include "TTree.h"
 
 #include "beamtiming.hpp"
+#include "runpairing.hpp"
 #include "../../NULIB/include/analysis/Event.hpp"
 #include "../../NULIB/include/analysis/Hit.hpp"
 #include "../../NULIB/include/detector/TexNeut.hpp"
 #include "../../NULIB/include/progutils/config.hpp"
-#include "../../NULIB/include/progutils/runlists.hpp"
 #include "../../TAcc/include/configs.h"
 #include "../../TAcc/include/taconfig.h"
 
 namespace bridges{
   //both detectors' data for one paired run
   struct LinkedRun{
-    progutils::RunPair pair{};
+    runpairing::RunPair pair{};
     std::vector<TN_obj::Event> texneut_events{};
     std::unique_ptr<TFile> texat_file{};
     TTree* texat_tree = nullptr; //owned by texat_file; entries are read from disk on demand
@@ -44,18 +44,18 @@ namespace bridges{
     std::size_t no_vertex{};  //goodcloud, but no usable row charge for a vertex estimate
   };
 
-  //accepts a TexNeut or TexAT run ID via TAcc's RunPairing (6hepn.txt and 9lipn.txt in
-  //info_directory), asking which detector is meant when the ID is in both columns
-  progutils::RunPair link_run(int requested_run, const std::string& info_directory);
+  //accepts a TexNeut or TexAT run ID via the pair lists 6hepn.txt and 9lipn.txt in
+  //info_directory, asking which detector is meant when the ID is in both columns
+  runpairing::RunPair link_run(int requested_run, const std::string& info_directory);
 
-  //the pair's beam from the same run lists: 0 = 6He, 1 = 9Li, as TAcc numbers its tables
-  int beam_dataset(const progutils::RunPair& pair, const std::string& info_directory);
+  //the pair's beam from the same pair lists: 0 = 6He, 1 = 9Li, as TAcc numbers its tables
+  int beam_dataset(const runpairing::RunPair& pair, const std::string& info_directory);
 
   //checks both files exist before reading either, then processes the evt file and opens
   //the TexAT tree; throws if either is missing or empty
   void load_linked_run(
     LinkedRun& output,
-    const progutils::RunPair& pair,
+    const runpairing::RunPair& pair,
     const config_obj& config,
     const TexNeut& tn,
     const TA::Config& ta_config

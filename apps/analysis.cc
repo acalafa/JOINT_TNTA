@@ -38,7 +38,7 @@ int main(int argc, char** argv){
     std::cout<<"Analyse which run (TexNeut or TexAT ID)? ";
     if(!(std::cin>>requestedrun)) throw std::runtime_error("Expected an integer run ID.");
 
-    const progutils::RunPair pair = bridges::link_run(requestedrun, joint.InfoDir);
+    const runpairing::RunPair pair = bridges::link_run(requestedrun, joint.InfoDir);
     std::cout<<"TexNeut run "<<pair.texneut_run<<" is paired with TexAT run "
              <<pair.texat_run<<"."<<std::endl;
 
