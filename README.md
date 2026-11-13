@@ -44,6 +44,11 @@ See [NULIB's README](../NULIB/README.MD) and
 [TAcc's configuration documentation](../TAcc/README.md#configuration) for the keys of
 each detector config.
 
+The beam from the pair lists also selects TAcc's beam-specific settings
+(`TA::Config::for_beam`, the `beam_time_*_<beam>` window) for the TexAT clouds, and the
+window used is printed. If the TexAT file is found in a `RawDataDir_6he`/`RawDataDir_9li`
+folder labelled with the other beam, jointanalysis stops with an error.
+
 jointanalysis timestamp-matches raw TexNeut and TexAT events directly; it reads no
 timestamp/TDC logs. The SRIM settings that
 generate the beam tables are in TAcc's `srimconfig.cfg`, which jointanalysis doesn't read.

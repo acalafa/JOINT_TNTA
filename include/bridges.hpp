@@ -52,13 +52,15 @@ namespace bridges{
   int beam_dataset(const runpairing::RunPair& pair, const std::string& info_directory);
 
   //checks both files exist before reading either, then processes the evt file and opens
-  //the TexAT tree; throws if either is missing or empty
+  //the TexAT tree; throws if either is missing or empty, or if the TexAT file sits in a
+  //RawDataDir_6he/_9li folder labelled with a beam other than dataset (beam_dataset)
   void load_linked_run(
     LinkedRun& output,
     const runpairing::RunPair& pair,
     const config_obj& config,
     const TexNeut& tn,
-    const TA::Config& ta_config
+    const TA::Config& ta_config,
+    int dataset
   );
 
   //The culls below keep texneut_events, texat_entries and vertices aligned and in order, and

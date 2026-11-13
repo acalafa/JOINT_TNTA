@@ -42,8 +42,19 @@ int main(int argc, char** argv){
     std::cout<<"TexNeut run "<<pair.texneut_run<<" is paired with TexAT run "
              <<pair.texat_run<<"."<<std::endl;
 
+    //the pair lists give the beam; its TAcc settings (beam-time window) replace the shared ones
+    const int dataset = bridges::beam_dataset(pair, joint.InfoDir);
+    tpc = ta_config.for_beam(dataset).tpc_info();
+    std::cout<<TA::beam_label(dataset)<<" run: ";
+    if(tpc.beam_time_cut()){
+      std::cout<<"beam window "<<tpc.beam_time_min_bucket<<"-"<<tpc.beam_time_max_bucket<<" buckets.";
+    }else{
+      std::cout<<"no beam-time window.";
+    }
+    std::cout<<std::endl;
+
     bridges::LinkedRun run{};
-    bridges::load_linked_run(run, pair, config, tn, ta_config);
+    bridges::load_linked_run(run, pair, config, tn, ta_config, dataset);
     std::cout<<run.texneut_events.size()<<" TexNeut events and "
              <<run.texat_tree->GetEntries()<<" TexAT entries loaded."<<std::endl;
 
@@ -67,7 +78,6 @@ int main(int argc, char** argv){
     std::cout<<run.texneut_events.size()<<" paired events kept, each with a vertex."<<std::endl;
 
     //nTOF = TDC_corr - (MARS scintillator to window + window to vertex) for the run's beam
-    const int dataset = bridges::beam_dataset(pair, joint.InfoDir);
     const beamtiming::BeamTiming beam(joint, ta_config, dataset);
     std::cout<<(dataset == 0 ? "6He" : "9Li")<<" beam: "<<beam.pregas_ns
              <<" ns from the MARS scintillator to the window."<<std::endl;

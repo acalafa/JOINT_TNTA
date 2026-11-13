@@ -80,18 +80,24 @@ void bridges::load_linked_run(
   const runpairing::RunPair& pair,
   const config_obj& config,
   const TexNeut& tn,
-  const TA::Config& ta_config
+  const TA::Config& ta_config,
+  int dataset
 ){
   const std::string evtfilename = fnames::InputEvtFile(config, pair.texneut_run);
-  const std::string rootfilename = get_ROOT_filename(ta_config.RawDataDir.c_str(), pair.texat_run).Data();
 
   //evt processing is slow and only prints an error for a missing file, so check both first
   if(!std::ifstream(evtfilename)){
     throw std::runtime_error("TexNeut evt file not found: " + evtfilename);
   }
-  if(!std::ifstream(rootfilename)){
-    throw std::runtime_error("TexAT ROOT file not found: " + rootfilename);
+  //first of TAcc's RawDataDir folders holding the run; throws, listing each one tried
+  const FoundROOTFile rootfile = find_ROOT_file(ta_config.RawDataDirs, pair.texat_run);
+  if(rootfile.dataset >= 0 && rootfile.dataset != dataset){
+    throw std::runtime_error("TexAT run " + std::to_string(pair.texat_run) + " is a " +
+                             TA::beam_label(dataset) + " run in the pair lists, but " +
+                             rootfile.path + " is in a RawDataDir_" +
+                             (rootfile.dataset == 0 ? "6he" : "9li") + " folder");
   }
+  const std::string& rootfilename = rootfile.path;
 
   LinkedRun loaded{};
   loaded.pair = pair;
