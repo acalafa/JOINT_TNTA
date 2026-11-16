@@ -42,15 +42,20 @@ int main(int argc, char** argv){
     std::cout<<"TexNeut run "<<pair.texneut_run<<" is paired with TexAT run "
              <<pair.texat_run<<"."<<std::endl;
 
-    //the pair lists give the beam; its TAcc settings (beam-time window) replace the shared ones
+    //the pair lists give the beam; its TAcc settings (beam-time window) replace the shared ones,
+    //and a beam_time_window_runs range covering the TexAT run replaces both
     const int dataset = bridges::beam_dataset(pair, joint.InfoDir);
-    tpc = ta_config.for_beam(dataset).tpc_info();
+    tpc = ta_config.for_run(dataset, pair.texat_run).tpc_info();
     std::cout<<TA::beam_label(dataset)<<" run: ";
     if(tpc.beam_time_cut()){
-      std::cout<<"beam window "<<tpc.beam_time_min_bucket<<"-"<<tpc.beam_time_max_bucket<<" buckets.";
+      std::cout<<"beam window "<<tpc.beam_time_min_bucket<<"-"<<tpc.beam_time_max_bucket<<" buckets";
     }else{
-      std::cout<<"no beam-time window.";
+      std::cout<<"no beam-time window";
     }
+    if(const TA::RunBeamWindow* window = ta_config.run_window(pair.texat_run)){
+      std::cout<<" (beam_time_window_runs "<<window->first_run<<"-"<<window->last_run<<")";
+    }
+    std::cout<<".";
     std::cout<<std::endl;
 
     bridges::LinkedRun run{};
